@@ -24,7 +24,7 @@ mod converter;
 #[command(author,version,about,long_about = None)]
 pub struct Args {
     /// The path to an image file
-    #[arg(long, default_value = "")]
+    #[arg()]
     file: String,
     /// The width of the ASCII art
     #[arg(long, default_value = "80")]
@@ -43,14 +43,13 @@ pub struct Args {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
+    let file = args.file;
+    if !std::path::Path::new(&file).exists() {
+        return Err("File does not exist".into());
+     }
+
     match args.live {
         true => {
-            let file = args.file;
-
-            if !std::path::Path::new(&file).exists() {
-                return Err("File does not exist".into());
-            }
-
             let result = App::run(file);
 
             println!("{}", result.unwrap());
@@ -58,7 +57,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(())
         },
         false => {
-            let open_file = ImageReader::open(args.file).unwrap();
+            let open_file = ImageReader::open(file).unwrap();
             let image = open_file.decode().unwrap();
             let converter = converter::ImageConverter::new(image);
             let options = converter::AsciiOptions::new(args.width, args.height, args.gamma);
