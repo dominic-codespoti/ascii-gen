@@ -1,6 +1,6 @@
+use crate::converter::ToAsciiArt;
 use clap::Parser;
 use image::io::Reader as ImageReader;
-use crate::converter::ToAsciiArt;
 
 use std::{
     io::{self, stdout, Stdout},
@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("{}", result.unwrap());
 
             Ok(())
-        },
+        }
         false => {
             let open_file = ImageReader::open(args.file).unwrap();
             let image = open_file.decode().unwrap();
@@ -84,7 +84,7 @@ enum Fields {
     Width,
     Height,
     Gamma,
-    Finish
+    Finish,
 }
 
 impl App {
@@ -118,73 +118,63 @@ impl App {
                 if let Event::Key(key) = event::read()? {
                     if key.kind == KeyEventKind::Press {
                         match key.code {
-                            KeyCode::Right => {
-                                match app.selected_field {
-                                    Fields::Width => {
-                                        app.width += 1;
-                                    },
-                                    Fields::Height => {
-                                        app.height += 1;
-                                    },
-                                    Fields::Gamma => {
-                                        app.gamma += 0.1;
-                                    },
-                                    Fields::Finish => {}
+                            KeyCode::Right => match app.selected_field {
+                                Fields::Width => {
+                                    app.width += 1;
+                                }
+                                Fields::Height => {
+                                    app.height += 1;
+                                }
+                                Fields::Gamma => {
+                                    app.gamma += 0.1;
+                                }
+                                Fields::Finish => {}
+                            },
+                            KeyCode::Left => match app.selected_field {
+                                Fields::Width => {
+                                    app.width -= 1;
+                                }
+                                Fields::Height => {
+                                    app.height -= 1;
+                                }
+                                Fields::Gamma => {
+                                    app.gamma -= 0.1;
+                                }
+                                Fields::Finish => {}
+                            },
+                            KeyCode::Up => match app.selected_field {
+                                Fields::Width => {
+                                    app.selected_field = Fields::Finish;
+                                }
+                                Fields::Height => {
+                                    app.selected_field = Fields::Width;
+                                }
+                                Fields::Gamma => {
+                                    app.selected_field = Fields::Height;
+                                }
+                                Fields::Finish => {
+                                    app.selected_field = Fields::Gamma;
                                 }
                             },
-                            KeyCode::Left => {
-                                match app.selected_field {
-                                    Fields::Width => {
-                                        app.width -= 1;
-                                    },
-                                    Fields::Height => {
-                                        app.height -= 1;
-                                    },
-                                    Fields::Gamma => {
-                                        app.gamma -= 0.1;
-                                    },
-                                    Fields::Finish => {}
+                            KeyCode::Down => match app.selected_field {
+                                Fields::Width => {
+                                    app.selected_field = Fields::Height;
+                                }
+                                Fields::Height => {
+                                    app.selected_field = Fields::Gamma;
+                                }
+                                Fields::Gamma => {
+                                    app.selected_field = Fields::Finish;
+                                }
+                                Fields::Finish => {
+                                    app.selected_field = Fields::Width;
                                 }
                             },
-                            KeyCode::Up => {
-                                match app.selected_field {
-                                    Fields::Width => {
-                                        app.selected_field = Fields::Finish;
-                                    },
-                                    Fields::Height => {
-                                        app.selected_field = Fields::Width;
-                                    },
-                                    Fields::Gamma => {
-                                        app.selected_field = Fields::Height;
-                                    },
-                                    Fields::Finish => {
-                                        app.selected_field = Fields::Gamma;
-                                    }
+                            KeyCode::Enter => match app.selected_field {
+                                Fields::Finish => {
+                                    break;
                                 }
-                            },
-                            KeyCode::Down => {
-                                match app.selected_field {
-                                    Fields::Width => {
-                                        app.selected_field = Fields::Height;
-                                    },
-                                    Fields::Height => {
-                                        app.selected_field = Fields::Gamma;
-                                    },
-                                    Fields::Gamma => {
-                                        app.selected_field = Fields::Finish;
-                                    },
-                                    Fields::Finish => {
-                                        app.selected_field = Fields::Width;
-                                    }
-                                }
-                            },
-                            KeyCode::Enter => {
-                                match app.selected_field {
-                                    Fields::Finish => {
-                                        break;
-                                    },
-                                    _ => {}
-                                }
+                                _ => {}
                             },
                             _ => {}
                         }
@@ -203,9 +193,7 @@ impl App {
         return Ok(app.art);
     }
 
-    fn on_tick(&mut self) {
-    
-    }
+    fn on_tick(&mut self) {}
 
     fn ui(&self, frame: &mut Frame) {
         let main_layout = Layout::default()
@@ -218,18 +206,50 @@ impl App {
     }
 
     fn boxes_options(&self, area: Rect) -> impl Widget {
-        let (left, right, bottom, top) = (0.0, area.width as f64, 0.0, area.height as f64 * 2.0 - 4.0);
+        let (left, right, bottom, top) =
+            (0.0, area.width as f64, 0.0, area.height as f64 * 2.0 - 4.0);
 
         let width = self.width.to_string();
-        let width_text = format!("Width: {} {}", width, if self.selected_field == Fields::Width { "<" } else { "" });
+        let width_text = format!(
+            "Width: {} {}",
+            width,
+            if self.selected_field == Fields::Width {
+                "<"
+            } else {
+                ""
+            }
+        );
 
         let height = self.height.to_string();
-        let height_text = format!("Height: {} {}", height, if self.selected_field == Fields::Height { "<" } else { "" });
+        let height_text = format!(
+            "Height: {} {}",
+            height,
+            if self.selected_field == Fields::Height {
+                "<"
+            } else {
+                ""
+            }
+        );
 
         let gamma = self.gamma.to_string();
-        let gamma_text = format!("Gamma: {} {}", gamma, if self.selected_field == Fields::Gamma { "<" } else { "" });
+        let gamma_text = format!(
+            "Gamma: {} {}",
+            gamma,
+            if self.selected_field == Fields::Gamma {
+                "<"
+            } else {
+                ""
+            }
+        );
 
-        let confirm_text = format!("Confirm {}", if self.selected_field == Fields::Finish { "<" } else { "" });
+        let confirm_text = format!(
+            "Confirm {}",
+            if self.selected_field == Fields::Finish {
+                "<"
+            } else {
+                ""
+            }
+        );
 
         Canvas::default()
             .block(Block::default().borders(Borders::ALL).title("Options"))
@@ -252,7 +272,8 @@ impl App {
     }
 
     fn boxes_canvas(&self, area: Rect) -> impl Widget {
-        let (left, right, bottom, top) = (0.0, area.width as f64, 0.0, area.height as f64 * 2.0 - 4.0);
+        let (left, right, bottom, top) =
+            (0.0, area.width as f64, 0.0, area.height as f64 * 2.0 - 4.0);
 
         let art = self.art.clone();
 
@@ -269,12 +290,12 @@ impl App {
                     color: Color::White,
                 });
                 let mut x = 1.0;
-                let mut y = top - 2.0; 
+                let mut y = top - 2.0;
 
                 for c in art.chars() {
                     if c == '\n' {
                         x = 1.0;
-                        y -= 1.0; 
+                        y -= 1.0;
                         continue;
                     }
                     ctx.print(x, y, c.to_string());
