@@ -15,7 +15,7 @@ cargo install ascii-gen
 Run the tool:
 
 ```bash
-ascii-gen --file path/to/your/image.jpg
+ascii-gen path/to/your/image.jpg
 ```
 
 Optional parameters:
@@ -28,11 +28,11 @@ Optional parameters:
 Examples:
 
 ```bash
-ascii-gen --file path/to/your/image.jpg --width 120 --height 60
+ascii-gen path/to/your/image.jpg --width 120 --height 60
 ```
 
 ```bash
-ascii-gen --file path/to/your/image.jpg --width 120 --height 60 --live
+ascii-gen path/to/your/image.jpg --width 120 --height 60 --live
 ```
 
 ## Examples
