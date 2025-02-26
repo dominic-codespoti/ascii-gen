@@ -1,10 +1,10 @@
 use image::{DynamicImage, GenericImageView, Pixel};
 
 /// ASCII characters to convert to.
-/// From brightest to darkest. It's length must not exceed 255.
+/// From brightest to darkest. Its length must not exceed 255.
 const ASCII_CHARACTERS: &'static str = "@MBHENR#KWXDFPQASUZbdehx*8Gm&04LOVYkpq5Tagns69owz$CIu23Jcfry%1v7l+it[]{}?j|()=~!-/<>\"^';,:`. ";
 const ASCII_CHARACTERS_LENGTH: u8 = ASCII_CHARACTERS.len() as u8;
-const ASCII_CHARACTERS_COEFFICIENT: f32 = 255 as f32 / ASCII_CHARACTERS_LENGTH as f32;
+const ASCII_CHARACTERS_COEFFICIENT: f32 = u8::MAX as f32 / ASCII_CHARACTERS_LENGTH as f32;
 
 /// Options for the ASCII art conversion.
 pub struct AsciiOptions {
