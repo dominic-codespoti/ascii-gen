@@ -1,5 +1,11 @@
 use image::{DynamicImage, GenericImageView, Pixel};
 
+/// ASCII characters to convert to.
+/// From brightest to darkest. Its length must not exceed 255.
+const ASCII_CHARACTERS: &'static str = "@MBHENR#KWXDFPQASUZbdehx*8Gm&04LOVYkpq5Tagns69owz$CIu23Jcfry%1v7l+it[]{}?j|()=~!-/<>\"^';,:`. ";
+const ASCII_CHARACTERS_LENGTH: u8 = ASCII_CHARACTERS.len() as u8;
+const ASCII_CHARACTERS_COEFFICIENT: f32 = u8::MAX as f32 / ASCII_CHARACTERS_LENGTH as f32;
+
 /// Options for the ASCII art conversion.
 pub struct AsciiOptions {
     width: u32,
@@ -84,15 +90,13 @@ impl ToAsciiArt for ImageConverter {
                     (0.2126 * avg_r as f32 + 0.7152 * avg_g as f32 + 0.0722 * avg_b as f32) as u8;
                 let luminance = ((base_luminance as f32 / 255.0).powf(gamma) * 255.0) as u8;
 
-                let character = match luminance {
-                    0..=31 => '#',
-                    32..=63 => '@',
-                    64..=95 => '8',
-                    96..=127 => '&',
-                    128..=159 => 'o',
-                    160..=191 => ':',
-                    192..=223 => '*',
-                    224..=255 => '.',
+                let character = {
+                    let luminance_in_ascii =
+                        (luminance as f32 / ASCII_CHARACTERS_COEFFICIENT) as u8;
+                    ASCII_CHARACTERS
+                        .chars()
+                        .nth(luminance_in_ascii as usize)
+                        .unwrap()
                 };
 
                 ascii_art.push(character);
